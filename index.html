@@ -9,7 +9,7 @@
 /* نوار ابزار مدیریتی بالای داشبورد از نمای کاربر پنهان شده است */
 .toolbar{display:none !important;}
 </style></head><body><div class="wrap">
-<header class="hero"><div><h1>داشبورد مدیریتی آموزش محصول</h1><p>پنبه‌ریز | پایش مدیریتی آموزش، تحلیل نتایج و پیگیری بازآموزی</p></div><div class="tag" id="sourceTag">داده واقعی اکسل کارنامه آزمون ۱۴۰۵ · ۱۲۶ نوبت</div></header>
+<header class="hero"><div><h1>داشبورد مدیریتی آموزش محصول</h1><p>پنبه‌ریز | پایش مدیریتی آموزش، تحلیل نتایج و پیگیری بازآموزی</p></div><div class="tag" id="sourceTag">منبع داده: گوگل‌شیت «بانک نتایج» · برای دریافت آخرین اطلاعات، به‌روزرسانی را بزنید</div></header>
 <div class="toolbar" style="display:flex !important;align-items:center;flex-wrap:wrap"><button class="btn green" id="sheetsRefreshBtn">به‌روزرسانی از گوگل‌شیت</button><span class="small" id="loadMsg" style="align-self:center">اطلاعات از شیت «بانک نتایج» فایل اصلاح‌شده کارنامه آزمون ۱۴۰۵ وارد شده است.</span></div>
 <nav aria-label="میانبرهای مدیریتی" class="manager-nav"><a href="#analyticsStart">تحلیل نتایج آزمون</a></nav>
 <section aria-label="دسترسی مدیریتی به منابع آموزش و آزمون" class="resourcegrid">
@@ -78,7 +78,7 @@ function parseRows(rows){
  return parsed.map(({_sourceIndex,...a})=>a);
 }
 // اتصال به شیت منتشرشده «بانک نتایج»؛ برای CSV از پارسر سازگار با کوتیشن استفاده می‌شود.
-const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1slzZhGfADicT0t00f9VEZH7bIBM9O8mfqTvjJOKpiM0/export?format=csv&gid=870006118';
+const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRY94Drj0A3h4NN5CM16aXF73-mTRLlLzERxPGJzfl8Ew1b-MBBIP1ANenNMKvJ4A/pub?gid=870006118&single=true&output=csv';
 function parseCSVText(text){
  const rows=[]; let row=[],field='',quoted=false;
  text=String(text||'').replace(/^\uFEFF/,'');
@@ -138,7 +138,7 @@ $('branchExportBtn').addEventListener('click',()=>{
  html=html.replace(/<button class="btn" id="branchExportBtn">ساخت فایل اختصاصی شعبه<\/button>/,'<button class="btn hidden" id="branchExportBtn" type="button">ساخت فایل اختصاصی شعبه</button>');
  html=html.replace(/<div class="tag" id="sourceTag">[^<]*<\/div>/,'<div class="tag" id="sourceTag">نسخه اختصاصی: '+esc(place)+'</div>');
  html=html.replace(/<title>[^<]*<\/title>/,'<title>داشبورد اختصاصی '+esc(place)+' | پنبه‌ریز</title>');
- html=html.replace('داده واقعی اکسل کارنامه آزمون ۱۴۰۵ · ۱۲۶ نوبت','نسخه اختصاصی: '+esc(place));
+ html=html.replace('منبع داده: گوگل‌شیت «بانک نتایج» · برای دریافت آخرین اطلاعات، به‌روزرسانی را بزنید','نسخه اختصاصی: '+esc(place));
  html=html.replace('اطلاعات از شیت «بانک نتایج» فایل اصلاح‌شده کارنامه آزمون ۱۴۰۵ وارد شده است.','این فایل فقط برای مشاهده داده‌های محل اختصاص‌یافته تولید شده است.');
  html=html.replace('ساخت فایل مستقل شعبه: فقط رکوردهای همان محل داخل فایل خروجی قرار می‌گیرند.','');
  const slug=place.replace(/[\\/:*?"<>|]/g,'_').replace(/\s+/g,'_');
