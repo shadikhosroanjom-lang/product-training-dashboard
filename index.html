@@ -78,7 +78,7 @@ function parseRows(rows){
  return parsed.map(({_sourceIndex,...a})=>a);
 }
 // اتصال به شیت منتشرشده «بانک نتایج»؛ برای CSV از پارسر سازگار با کوتیشن استفاده می‌شود.
-const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRY94Drj0A3h4NN5CM16aXF73-mTRLlLzERxPGJzfl8Ew1b-MBBIP1ANenNMKvJ4A/pub?gid=870006118&single=true&output=csv';
+const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQuENg3NHI8hr4qJHPzSHn459pG0MZrSCPpskLDfrKtZzFYKaqvDlHE5R4vSazpjoiWaY6KkbDgWh_6/pub?gid=870006118&single=true&output=csv';
 function parseCSVText(text){
  const rows=[]; let row=[],field='',quoted=false;
  text=String(text||'').replace(/^\uFEFF/,'');
