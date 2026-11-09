@@ -132,7 +132,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{
 <section class="kpis" id="kpis"></section>
 <section class="donut-grid" aria-label="تحلیل وضعیت آزمون و بازآموزی">
  <div class="donut-panel" id="firstDonut"><h2>وضعیت اولین آزمون افراد</h2><div class="desc">هر فرد فقط یک‌بار و بر اساس اولین نوبت آزمون محاسبه می‌شود.</div><div class="donut-layout"><div id="firstDonutVisual"></div><div class="donut-legend" id="firstDonutLegend"></div></div></div>
- <div class="donut-panel" id="retrainingDonut"><h2>نتیجه نهایی پیگیری افراد نیازمند بازآموزی و مردود</h2><div class="desc">مبنای این نمودار، ستون «نتیجه نهایی پیگیری» در شیت «بانک نتایج» است؛ هر فرد فقط یک‌بار و بر اساس آخرین مقدار غیرخالی ثبت‌شده محاسبه می‌شود. <span id="retestCountNote" class="small"></span></div><div class="donut-layout"><div id="retrainingDonutVisual"></div><div class="donut-legend" id="retrainingDonutLegend"></div></div></div>
+ <div class="donut-panel" id="retrainingDonut"><h2>نتیجه نهایی پیگیری افراد نیازمند بازآموزی و مردود</h2><div class="desc">این نمودار از نمره آزمون‌ها محاسبه می‌شود، نه از فرمول‌های کمکی شیت؛ هر فرد فقط یک‌بار و بر اساس اولین و آخرین آزمون ثبت‌شده محاسبه می‌شود. <span id="retestCountNote" class="small"></span></div><div class="donut-layout"><div id="retrainingDonutVisual"></div><div class="donut-legend" id="retrainingDonutLegend"></div></div></div>
 </section>
 <section class="drill-panel" id="drilldownPanel" hidden><div class="drill-head"><h2 id="drilldownTitle">فهرست افراد</h2><button class="btn" id="closeDrilldown" type="button">بستن</button></div><div class="drill-table"><table><thead><tr><th>نام و نام خانوادگی</th><th>واحد سازمانی</th><th>محل فعالیت</th><th>نمره اولین آزمون</th><th>تاریخ بازآموزی</th><th>نمره آزمون پس از بازآموزی</th><th>وضعیت</th></tr></thead><tbody id="drilldownBody"></tbody></table></div></section>
 <section class="grid2"><div class="panel"><h2>وضعیت نهایی افراد</h2><div class="desc">بر اساس آخرین تلاش ثبت‌شده هر فرد در داده‌های فیلترشده</div><div class="statuslist" id="statusChart"></div><div class="legend"><span><i class="dot" style="background:#65A9F5"></i>قبول</span><span><i class="dot" style="background:#9B8BE8"></i>نیاز به بازآموزی</span><span><i class="dot" style="background:#EEA0D5"></i>مردود</span></div></div><div class="panel"><h2>میانگین نمره به تفکیک محل فعالیت</h2><div class="desc">میانگین نمره از ۲۰ برای آخرین آزمون هر فرد</div><div class="bars" id="placeChart"></div></div></section>
@@ -183,21 +183,44 @@ function getRetrainingCohort(){const {latest}=getFiltered();const selected=new S
 function renderDonut(visualId,legendId,items,total,centerLabel='فرد یکتا'){const colors=items.map(x=>x.color);let offset=0;const r=70,circ=2*Math.PI*r;const paths=items.map((item,i)=>{const len=total?item.value/total*circ:0;const el=item.value>0?`<circle class="donut-slice" data-group="${esc(item.key)}" cx="110" cy="110" r="${r}" fill="none" stroke="${colors[i]}" stroke-width="32" stroke-dasharray="${len} ${circ-len}" stroke-dashoffset="${-offset}" transform="rotate(-90 110 110)"><title>${esc(item.label)}: ${item.value} نفر</title></circle>`:'';offset+=len;return el}).join('');$(visualId).innerHTML=`<svg class="donut-svg" viewBox="0 0 220 220" role="img" aria-label="نمودار دوناتی"><circle cx="110" cy="110" r="70" fill="none" stroke="#edf2ff" stroke-width="32"/>${paths}<text x="110" y="105" text-anchor="middle" font-size="25" font-weight="700" fill="#123B86">${fmt(total,0)}</text><text x="110" y="128" text-anchor="middle" font-size="11" fill="#7182a8">${esc(centerLabel)}</text></svg>`;const isRetraining=legendId==='retrainingDonutLegend';$(legendId).classList.toggle('retraining-legend',isRetraining);$(legendId).innerHTML=items.map(x=>{const pct=total?x.value/total*100:0;return isRetraining?`<button type="button" data-group="${esc(x.key)}"><span class="legend-label"><i class="legend-swatch" style="background:${x.color}"></i>${esc(x.label)}</span><strong class="retraining-metric">${fmt(pct,1)}٪</strong><span class="retraining-count">${fmt(x.value,0)} نفر از ${fmt(total,0)} نفر</span><span class="retraining-track"><i class="retraining-fill" style="width:${Math.max(0,Math.min(100,pct))}%;background:${x.color}"></i></span></button>`:`<button type="button" data-group="${esc(x.key)}"><span class="legend-label"><i class="legend-swatch" style="background:${x.color}"></i>${esc(x.label)}</span><strong>${fmt(x.value,0)} · ${fmt(pct)}٪</strong></button>`}).join('')||'<div class="empty">داده‌ای وجود ندارد</div>'}
 let currentDrillRows=[];
 function openDrilldown(key,source){const item=source.find(x=>x.key===key);if(!item)return;const rows=item.rows||[];currentDrillRows=rows;$('drilldownTitle').textContent=`${item.label} · ${fmt(rows.length,0)} نفر`;$('drilldownBody').innerHTML=rows.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.unit||'ثبت نشده')}</td><td>${esc(x.place||'ثبت نشده')}</td><td>${fmt(x.firstScore)}</td><td>${esc(x.trainingDate||'—')}</td><td>${x.retestScore===null?'—':fmt(x.retestScore)}</td><td>${esc(x.state||item.label)}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">فردی در این گروه وجود ندارد.</td></tr>';$('drilldownPanel').hidden=false;$('drilldownPanel').scrollIntoView({behavior:'smooth',block:'start'})}
-function renderTrainingAnalytics(){const groups=personGroups(allAttempts);const {latest}=getFiltered();const selected=new Set(latest.map(a=>keyName(a)));const firstPeople=[];for(const [key,list] of groups){if(selected.has(key)&&list.length)firstPeople.push({key,name:list[0].name,firstScore:list[0].score20,unit:(latest.find(a=>keyName(a)===key)||list[0]).unit||'',place:(latest.find(a=>keyName(a)===key)||list[0]).place||'',state:statusFor(list[0].score100),trainingDate:'',retestScore:null})}
- const firstDefs=[{key:'first-pass',label:'قبول',color:'#65A9F5'},{key:'first-retrain',label:'نیاز به بازآموزی',color:'#9B8BE8'},{key:'first-fail',label:'مردود',color:'#EEA0D5'}];const firstItems=firstDefs.map(d=>({...d,value:firstPeople.filter(x=>x.state===d.label).length,rows:firstPeople.filter(x=>x.state===d.label)}));renderDonut('firstDonutVisual','firstDonutLegend',firstItems,firstPeople.length);
- const followupPeople=[...groups.entries()].filter(([key,list])=>selected.has(key)&&list.length&&statusFor(list[0].score100)!=='قبول').map(([key,list])=>{
-  const context=latest.find(a=>keyName(a)===key)||list[list.length-1];
-  const ordered=[...list].sort(compareExam);
-  const withResult=ordered.filter(a=>cleanField(a.finalFollowup));
-  const finalValue=withResult.length?cleanField(withResult[withResult.length-1].finalFollowup):'ثبت نشده';
-  const first=list[0], last=ordered[ordered.length-1];
-  return {key,name:first.name,unit:context.unit||first.unit||'',place:context.place||first.place||'',firstScore:first.score20,firstDate:first.date,trainingDate:'',retestScore:null,latestScore:last.score20,state:finalValue,attempts:list.length};
- });
- const followupMap=new Map();
- followupPeople.forEach(person=>{const label=person.state||'ثبت نشده';const groupKey='followup-'+norm(label);if(!followupMap.has(groupKey))followupMap.set(groupKey,{key:groupKey,label,color:/قبول|موفق/.test(norm(label))?'#65A9F5':/مردود|ناموفق|عدم/.test(norm(label))?'#EEA0D5':'#9B8BE8',value:0,rows:[]});const item=followupMap.get(groupKey);item.value++;item.rows.push(person)});
- const stateItems=[...followupMap.values()];
- const note=$('retestCountNote');if(note)note.textContent=`جامعه محاسبه: افراد دارای نتیجه غیرقبول در اولین آزمون؛ فاقد مقدار نهایی با عنوان «ثبت نشده» نمایش داده می‌شوند.`;
- renderDonut('retrainingDonutVisual','retrainingDonutLegend',stateItems,followupPeople.length,'نتیجه پیگیری');
+function renderTrainingAnalytics(){
+ const groups=personGroups(allAttempts);
+ const {latest}=getFiltered();
+ const selected=new Set(latest.map(a=>keyName(a)));
+ const firstPeople=[];
+ const followupPeople=[];
+ for(const [key,rawList] of groups){
+  if(!selected.has(key)||!rawList.length)continue;
+  const list=[...rawList].sort(compareExam);
+  const first=list[0], last=list[list.length-1];
+  const context=latest.find(a=>keyName(a)===key)||last;
+  const firstState=statusFor(first.score100);
+  firstPeople.push({key,name:first.name,firstScore:first.score20,unit:context.unit||'',place:context.place||'',state:firstState,attempts:list.length});
+  if(firstState==='قبول')continue;
+  let state='در انتظار آزمون مجدد';
+  if(list.length>1) state=statusFor(last.score100)==='قبول'?'قبول در آزمون مجدد':'مردود در آزمون مجدد';
+  followupPeople.push({key,name:first.name,unit:context.unit||first.unit||'',place:context.place||first.place||'',firstScore:first.score20,firstDate:first.date,latestScore:last.score20,state,attempts:list.length});
+ }
+ const firstDefs=[
+  {key:'first-pass',label:'قبول',color:'#65A9F5'},
+  {key:'first-retrain',label:'نیاز به بازآموزی',color:'#9B8BE8'},
+  {key:'first-fail',label:'مردود',color:'#EEA0D5'}
+ ];
+ const firstItems=firstDefs.map(d=>({...d,value:firstPeople.filter(x=>x.state===d.label).length,rows:firstPeople.filter(x=>x.state===d.label)}));
+ const firstTotal=firstItems.reduce((n,x)=>n+x.value,0);
+ if(firstTotal!==firstPeople.length) throw new Error('کنترل صحت نمودار آزمون اول ناموفق است.');
+ renderDonut('firstDonutVisual','firstDonutLegend',firstItems,firstPeople.length);
+ const followDefs=[
+  {key:'retest-pass',label:'قبول در آزمون مجدد',color:'#65A9F5'},
+  {key:'retest-fail',label:'مردود در آزمون مجدد',color:'#EEA0D5'},
+  {key:'retest-pending',label:'در انتظار آزمون مجدد',color:'#9B8BE8'}
+ ];
+ const stateItems=followDefs.map(d=>({...d,value:followupPeople.filter(x=>x.state===d.label).length,rows:followupPeople.filter(x=>x.state===d.label)}));
+ const followTotal=stateItems.reduce((n,x)=>n+x.value,0);
+ if(followTotal!==followupPeople.length) throw new Error('کنترل صحت نمودار پیگیری بازآموزی ناموفق است.');
+ const note=$('retestCountNote');
+ if(note) note.textContent=`مبنای محاسبه: نمره اولین آزمون و آخرین آزمون ثبت‌شده برای هر فرد؛ هر فرد فقط یک‌بار شمرده می‌شود. جمع دسته‌ها: ${followTotal} نفر.`;
+ renderDonut('retrainingDonutVisual','retrainingDonutLegend',stateItems,followupPeople.length,'وضعیت آزمون مجدد');
  $('firstDonut').dataset.items=JSON.stringify(firstItems.map(x=>({key:x.key,label:x.label,rows:x.rows})));
  $('retrainingDonut').dataset.items=JSON.stringify(stateItems.map(x=>({key:x.key,label:x.label,rows:x.rows})));
 }
@@ -224,11 +247,14 @@ function parseRows(rows){
  const headers=rows[headerIndex].map(x=>String(x??''));
  const ix={name:findCol(headers,['نام و نام خانوادگی']),brand:findCol(headers,['نام برند','برند']),unit:findCol(headers,['واحد سازمانی','واحد']),sessionId:findCol(headers,['شناسه جلسه','کد جلسه']),place:findCol(headers,['محل فعالیت','نام استان','استان','شعبه']),role:findCol(headers,['سمت']),date:findCol(headers,['تاریخ آزمون']),score20:findCol(headers,['نمره کلی آزمون از ۲۰','نمره از ۲۰','نمره']),score100:findCol(headers,['نمره از ۱۰۰']),status:findCol(headers,['وضعیت']),attempt:findCol(headers,['شماره آزمون فرد','شماره تلاش']),code:findCol(headers,['کد پرسنلی']),change:findCol(headers,['تغییر نسبت به آزمون قبل']),examMode:findCol(headers,['نحوه برگزاری آزمون','نحوه برگزاری']),finalFollowup:findCol(headers,['نتیجه نهایی پیگیری'])};
  if(ix.name<0||ix.score20<0)throw Error('ستون نام و نمره از فایل قابل تشخیص نیست.');
- const parsed=rows.slice(headerIndex+1).map((row,i)=>{
+ let parsed=rows.slice(headerIndex+1).map((row,i)=>{
   const raw20=row[ix.score20]; const n=parseNumeric(raw20);
   const raw100=ix.score100>=0?row[ix.score100]:''; const parsed100=parseNumeric(raw100);
   return {name:ix.name>=0?row[ix.name]:'',brand:ix.brand>=0?(cleanField(row[ix.brand])||'پنبه‌ریز'):'پنبه‌ریز',unit:ix.unit>=0?row[ix.unit]:'',sessionId:ix.sessionId>=0?row[ix.sessionId]:'',place:ix.place>=0?row[ix.place]:'',role:ix.role>=0?row[ix.role]:'',date:ix.date>=0?row[ix.date]:'',score20:n,score100:Number.isFinite(parsed100)?parsed100:(Number.isFinite(n)?n*5:NaN),status:ix.status>=0?row[ix.status]:'',attempt:ix.attempt>=0?parseNumeric(row[ix.attempt])||0:0,code:ix.code>=0?row[ix.code]:'',change:ix.change>=0?row[ix.change]:'',examMode:ix.examMode>=0?row[ix.examMode]:'',finalFollowup:ix.finalFollowup>=0?cleanField(row[ix.finalFollowup]):'',_sourceIndex:i};
- }).filter(a=>cleanField(a.name)&&Number.isFinite(a.score20));
+ });
+ const invalidScoreRows=parsed.filter(a=>cleanField(a.name)&&(!Number.isFinite(a.score20)||a.score20<0||a.score20>20));
+ if(invalidScoreRows.length)throw Error(`به‌روزرسانی متوقف شد: در ${invalidScoreRows.length} ردیف دارای نام، نمره خالی یا خارج از بازه ۰ تا ۲۰ وجود دارد. ابتدا شیت «بانک نتایج» را اصلاح کنید.`);
+ parsed=parsed.filter(a=>cleanField(a.name));
  // Formula-only Excel columns may have no cached values. Reconstruct attempt number and score change from name/code and date.
  const groups=new Map();
  for(const a of parsed){const code=cleanField(a.code);const key=norm(a.name)+'|'+(code&&code!=='0'?code:'');if(!groups.has(key))groups.set(key,[]);groups.get(key).push(a)}
