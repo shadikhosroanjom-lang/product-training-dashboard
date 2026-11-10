@@ -312,7 +312,7 @@ body{background:radial-gradient(ellipse at top left,#fbe5f2,transparent 34rem),r
 
 
 <div class="toolbar" style="display:none !important"><label class="btn primary" for="fileInput">بارگذاری فایل اکسل جدید</label><input accept=".xlsx,.xls,.csv" class="upload" id="fileInput" type="file"/><button class="btn" id="resetBtn">بازگشت به داده اولیه</button><button class="btn" id="thresholdBtn">تنظیم آستانه قبولی</button><button class="btn" id="branchExportBtn">ساخت فایل اختصاصی شعبه</button><span class="small" id="loadMsgUpload" style="align-self:center">برای به‌روزرسانی، فایل اکسل کارنامه یا داشبورد را انتخاب کنید.</span></div>
-<section class="filters" id="analyticsStart"><div class="field"><label for="brandFilter">نام برند</label><select id="brandFilter"><option value="">همه برندها</option><option>پنبه‌ریز</option><option>کیدفول</option><option>سایر برندها</option></select></div><div class="field"><label>واحد سازمانی</label><select id="unitFilter"><option value="">همه واحدها</option><option>فروش</option><option>مارکتینگ</option><option>برندینگ</option><option>سایر واحدها</option></select></div><div class="field"><label>محل فعالیت / استان</label><select id="placeFilter"><option value="">همه محل‌ها</option></select></div><div class="field"><label>نحوه برگزاری آموزش</label><select id="trainingModeFilter"><option value="">حضوری و آنلاین</option><option value="حضوری">حضوری</option><option value="آنلاین">آنلاین</option></select></div><div class="field"><label>سمت</label><select id="roleFilter"><option value="">همه سمت‌ها</option></select></div><div class="field"><label>وضعیت آخرین آزمون</label><select id="statusFilter"><option value="">همه وضعیت‌ها</option><option>قبول</option><option>نیاز به بازآموزی</option><option>مردود</option></select></div></section>
+<section class="filters" id="analyticsStart"><div class="field"><label for="brandFilter">نام برند</label><select id="brandFilter"><option value="">همه برندها</option><option value="panberes">پنبه‌ریز</option><option value="kidful">کیدفول</option><option value="other">سایر برندها</option></select></div><div class="field"><label>واحد سازمانی</label><select id="unitFilter"><option value="">همه واحدها</option><option>فروش</option><option>مارکتینگ</option><option>برندینگ</option><option>سایر واحدها</option></select></div><div class="field"><label>محل فعالیت / استان</label><select id="placeFilter"><option value="">همه محل‌ها</option></select></div><div class="field"><label>نحوه برگزاری آموزش</label><select id="trainingModeFilter"><option value="">حضوری و آنلاین</option><option value="حضوری">حضوری</option><option value="آنلاین">آنلاین</option></select></div><div class="field"><label>سمت</label><select id="roleFilter"><option value="">همه سمت‌ها</option></select></div><div class="field"><label>وضعیت آخرین آزمون</label><select id="statusFilter"><option value="">همه وضعیت‌ها</option><option>قبول</option><option>نیاز به بازآموزی</option><option>مردود</option></select></div></section>
 <section class="kpis" id="kpis"></section>
 <section class="donut-grid" aria-label="تحلیل وضعیت آزمون و بازآموزی">
  <div class="donut-panel" id="firstDonut"><h2>وضعیت اولین آزمون افراد</h2><div class="desc">هر فرد فقط یک‌بار و بر اساس اولین نوبت آزمون محاسبه می‌شود.</div><div class="donut-layout"><div id="firstDonutVisual"></div><div class="donut-legend" id="firstDonutLegend"></div></div></div>
@@ -339,15 +339,13 @@ function latestPeople(data){let map=new Map();for(const a of data){let k=keyName
 function recoveryPeople(data){const groups=new Map();for(const a of data){const k=keyName(a);if(!k)continue;if(!groups.has(k))groups.set(k,[]);groups.get(k).push(a)}const out=[];for(const list of groups.values()){const ordered=[...list].sort((a,b)=>parseDate(a.date)-parseDate(b.date)||(+a.attempt||1)-(+b.attempt||1)||(+a._i||0)-(+b._i||0));const firstNonPass=ordered.find(a=>statusFor(a.score100)!=='قبول');const last=ordered[ordered.length-1];if(firstNonPass&&ordered.length>1&&statusFor(last.score100)==='قبول'&&ordered.some(a=>a!==firstNonPass&&parseDate(a.date)>=parseDate(firstNonPass.date)&&statusFor(a.score100)==='قبول'))out.push({name:last.name,previousStatus:statusFor(firstNonPass.score100),previousScore:firstNonPass.score100,previousDate:firstNonPass.date,passDate:last.date,passScore:last.score100,attempts:ordered.length,place:last.place||firstNonPass.place||''})}return out.sort((a,b)=>parseDate(b.passDate)-parseDate(a.passDate))}
 function pill(s){let c=s==='قبول'?'pass':s==='مردود'?'fail':s==='نیاز به بازآموزی'?'retrain':'neutral';return `<span class="pill ${c}">${s}</span>`}function fmt(n,d=1){return Number.isFinite(n)?n.toLocaleString('fa-IR',{maximumFractionDigits:d,minimumFractionDigits:0}):'—'}
 function brandGroup(brand){
-  // مقایسه برندها بر اساس کلید ثابت؛ نه متن نمایشی گزینه فیلتر
   const normalized = String(brand ?? '')
     .normalize('NFKC')
-    .replace(/[يى]/g,'ی')
-    .replace(/ك/g,'ک')
-    .replace(/[\u0640\u200B-\u200F\u202A-\u202E\u2060\uFEFF]/g,'')
-    .replace(/[\s\u00A0\u200C\u200D\u002D\u2010-\u2015_]/g,'')
+    .replace(/[يى]/g,'ی').replace(/ك/g,'ک')
+    .replace(/[ـ\u200b-\u200f\u202a-\u202e\ufeff]/g,'')
+    .replace(/[\s\u00a0\u200c\u200d\-\u2010-\u2015_]/g,'')
     .toLowerCase();
-  if (['پنبهریز','panberes','panberiz','panberes'].includes(normalized)) return 'panberes';
+  if (['پنبهریز','panberes','panberiz'].includes(normalized)) return 'panberes';
   if (['کیدفول','kidful','kidfull'].includes(normalized)) return 'kidful';
   return 'other';
 }
