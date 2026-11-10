@@ -301,6 +301,30 @@ body{background:radial-gradient(ellipse at top left,#fbe5f2,transparent 34rem),r
   .filters{grid-template-columns:repeat(2,minmax(0,1fr))}
   .hero{padding:16px}.hero .tag{white-space:normal}
 }
+
+
+ /* Mobile-only layout: retain desktop-style columns inside a horizontally scrollable canvas. */
+ @media(max-width:620px){
+   html,body{width:100%;max-width:100%;overflow-x:auto}
+   body{-webkit-overflow-scrolling:touch}
+   .wrap{width:1180px;min-width:1180px;max-width:none;padding:12px 16px 26px;margin:0}
+   .hero{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px;border-radius:17px}
+   .hero .tag{white-space:nowrap;margin-top:0}
+   .resourcegrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+   .filters{grid-template-columns:repeat(6,minmax(150px,1fr));gap:10px}
+   .filters .field{padding:8px 10px}
+   .kpis{grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+   .kpi{padding:14px 16px}
+   .kpi .value{font-size:29px}
+   .donut-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+   .donut-panel,.panel{padding:18px 20px}
+   .donut-layout{grid-template-columns:minmax(160px,220px) minmax(0,1fr);gap:14px}
+   .donut-svg{max-width:220px}
+   .grid2{grid-template-columns:1.1fr 1fr;gap:16px}
+   .insights{grid-template-columns:repeat(3,minmax(0,1fr))}
+   .barrow{grid-template-columns:110px minmax(120px,1fr) 42px}
+   .tablewrap,.drill-table{overflow:auto}
+ }
 </style></head><body><div class="wrap">
 <header class="hero"><div><h1>داشبورد مدیریتی آموزش محصول</h1><p>پایش مدیریتی آموزش، تحلیل نتایج و پیگیری بازآموزی</p></div><div class="tag" id="sourceTag">منبع اصلی: شیت «بانک نتایج»</div></header>
 <div class="toolbar" style="display:flex !important;align-items:center;flex-wrap:wrap"><button class="btn green" id="sheetsRefreshBtn">به‌روزرسانی از گوگل‌شیت</button><button class="btn" id="exportBtn">خروجی CSV افراد</button><span class="small" id="loadMsg" style="align-self:center">داده‌های اولیه داخل داشبورد ذخیره شده‌اند؛ برای دریافت آخرین رکوردها، دکمه به‌روزرسانی از شیت «بانک نتایج» را انتخاب کنید.</span></div>
@@ -312,7 +336,8 @@ body{background:radial-gradient(ellipse at top left,#fbe5f2,transparent 34rem),r
 
 
 <div class="toolbar" style="display:none !important"><label class="btn primary" for="fileInput">بارگذاری فایل اکسل جدید</label><input accept=".xlsx,.xls,.csv" class="upload" id="fileInput" type="file"/><button class="btn" id="resetBtn">بازگشت به داده اولیه</button><button class="btn" id="thresholdBtn">تنظیم آستانه قبولی</button><button class="btn" id="branchExportBtn">ساخت فایل اختصاصی شعبه</button><span class="small" id="loadMsgUpload" style="align-self:center">برای به‌روزرسانی، فایل اکسل کارنامه یا داشبورد را انتخاب کنید.</span></div>
-<section class="filters" id="analyticsStart"><div class="field"><label for="brandFilter">نام برند</label><select id="brandFilter"><option value="">همه برندها</option><option>پنبه‌ریز</option><option>کیدفول</option><option>سایر برندها</option></select></div><div class="field"><label>واحد سازمانی</label><select id="unitFilter"><option value="">همه واحدها</option><option>فروش</option><option>مارکتینگ</option><option>برندینگ</option><option>سایر واحدها</option></select></div><div class="field"><label>محل فعالیت / استان</label><select id="placeFilter"><option value="">همه محل‌ها</option></select></div><div class="field"><label>نحوه برگزاری آموزش</label><select id="trainingModeFilter"><option value="">حضوری و آنلاین</option><option value="حضوری">حضوری</option><option value="آنلاین">آنلاین</option></select></div><div class="field"><label>سمت</label><select id="roleFilter"><option value="">همه سمت‌ها</option></select></div><div class="field"><label>وضعیت آخرین آزمون</label><select id="statusFilter"><option value="">همه وضعیت‌ها</option><option>قبول</option><option>نیاز به بازآموزی</option><option>مردود</option></select></div></section>
+<section class="filters" id="analyticsStart"><div class="field"><label for="brandFilter">نام برند</label><select id="brandFilter"><option value="">همه برندها</option><option value="پنبه‌ریز">پنبه‌ریز</option><option value="کیدفول">کیدفول</option><option value="سایر برندها">سایر برندها</option></select></div><div class="field"><label>واحد سازمانی</label><select id="unitFilter"><option value="">همه واحدها</option><option>فروش</option><option>مارکتینگ</option><option>برندینگ</option><option>سایر واحدها</option></select></div><div class="field"><label>محل فعالیت / استان</label><select id="placeFilter"><option value="">همه محل‌ها</option></select></div><div class="field"><label>نحوه برگزاری آموزش</label><select id="trainingModeFilter"><option value="">حضوری و آنلاین</option><option value="حضوری">حضوری</option><option value="آنلاین">آنلاین</option></select></div><div class="field"><label>سمت</label><select id="roleFilter"><option value="">همه سمت‌ها</option></select></div><div class="field"><label>وضعیت آخرین آزمون</label><select id="statusFilter"><option value="">همه وضعیت‌ها</option><option>قبول</option><option>نیاز به بازآموزی</option><option>مردود</option></select></div></section>
+<div id="brandEmptyState" class="empty hidden" role="status" aria-live="polite">داده‌ای برای این برند ثبت نشده است.</div>
 <section class="kpis" id="kpis"></section>
 <section class="donut-grid" aria-label="تحلیل وضعیت آزمون و بازآموزی">
  <div class="donut-panel" id="firstDonut"><h2>وضعیت اولین آزمون افراد</h2><div class="desc">هر فرد فقط یک‌بار و بر اساس اولین نوبت آزمون محاسبه می‌شود.</div><div class="donut-layout"><div id="firstDonutVisual"></div><div class="donut-legend" id="firstDonutLegend"></div></div></div>
@@ -338,8 +363,17 @@ function cleanData(data){return data.map(a=>({...a,score20:parseNumeric(a.score2
 function latestPeople(data){let map=new Map();for(const a of data){let k=keyName(a),old=map.get(k);if(!old||parseDate(a.date)>parseDate(old.date)||(parseDate(a.date)===parseDate(old.date)&&(+a.attempt||0)>(+old.attempt||0))||(parseDate(a.date)===parseDate(old.date)&&(+a.attempt||0)===(+old.attempt||0)&&a._i>old._i))map.set(k,a)}return [...map.values()].map(a=>({...a,attempts:data.filter(x=>keyName(x)===keyName(a)).length,status:statusFor(a.score100)}))}
 function recoveryPeople(data){const groups=new Map();for(const a of data){const k=keyName(a);if(!k)continue;if(!groups.has(k))groups.set(k,[]);groups.get(k).push(a)}const out=[];for(const list of groups.values()){const ordered=[...list].sort((a,b)=>parseDate(a.date)-parseDate(b.date)||(+a.attempt||1)-(+b.attempt||1)||(+a._i||0)-(+b._i||0));const firstNonPass=ordered.find(a=>statusFor(a.score100)!=='قبول');const last=ordered[ordered.length-1];if(firstNonPass&&ordered.length>1&&statusFor(last.score100)==='قبول'&&ordered.some(a=>a!==firstNonPass&&parseDate(a.date)>=parseDate(firstNonPass.date)&&statusFor(a.score100)==='قبول'))out.push({name:last.name,previousStatus:statusFor(firstNonPass.score100),previousScore:firstNonPass.score100,previousDate:firstNonPass.date,passDate:last.date,passScore:last.score100,attempts:ordered.length,place:last.place||firstNonPass.place||''})}return out.sort((a,b)=>parseDate(b.passDate)-parseDate(a.passDate))}
 function pill(s){let c=s==='قبول'?'pass':s==='مردود'?'fail':s==='نیاز به بازآموزی'?'retrain':'neutral';return `<span class="pill ${c}">${s}</span>`}function fmt(n,d=1){return Number.isFinite(n)?n.toLocaleString('fa-IR',{maximumFractionDigits:d,minimumFractionDigits:0}):'—'}
+function normalizeBrand(brand){
+  return String(brand??'')
+    .normalize('NFKC')
+    .replace(/[يى]/g,'ی').replace(/ك/g,'ک')
+    .replace(/[\u0640]/g,'')
+    .replace(/[\u200B-\u200F\u202A-\u202E\u2060\uFEFF]/g,'')
+    .replace(/[\s\u00A0\u200c\-_–—]+/g,'')
+    .toLowerCase();
+}
 function brandGroup(brand){
-  const normalized = cleanField(brand).replace(/[\s\u200c-]/g,'').toLowerCase();
+  const normalized=normalizeBrand(brand);
   if (['پنبهریز','panberes','panberiz'].includes(normalized)) return 'پنبه‌ریز';
   if (['کیدفول','kidful','kidfull'].includes(normalized)) return 'کیدفول';
   return 'سایر برندها';
@@ -347,7 +381,7 @@ function brandGroup(brand){
 function getFiltered(){let b=$('brandFilter').value,u=$('unitFilter').value,p=$('placeFilter').value,m=$('trainingModeFilter').value,r=$('roleFilter').value,s=$('statusFilter').value;let at=allAttempts.filter(a=>(!b||brandGroup(a.brand)===b)&&(!u||((u==='سایر واحدها'?(!!a.unit&&!['فروش','مارکتینگ','برندینگ'].includes(a.unit)):a.unit===u)))&&(!p||a.place===p)&&(!m||(()=>{const mode=v=>{const z=norm(v).replace(/[يى]/g,'ی');if(['آنلاین','آن لاين','آنلاین ','online','online training','مجازی'].includes(z))return 'آنلاین';if(['حضوری','حضوري','in-person','in person','حضوری '].includes(z))return 'حضوری';return z};return mode(a.examMode)===mode(m)})())&&(!r||a.role===r));let latest=latestPeople(at).filter(a=>!s||a.status===s);return {at,latest}}
 function setOptions(id,values,first){let el=$(id),old=el.value;el.innerHTML=`<option value="">${first}</option>`+[...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa')).map(v=>`<option>${esc(v)}</option>`).join('');if([...el.options].some(o=>o.value===old))el.value=old}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function render(){const {at,latest}=getFiltered();const avg=latest.length?latest.reduce((s,a)=>s+a.score20,0)/latest.length:0;const pass=latest.filter(a=>a.status==='قبول').length,re=latest.filter(a=>a.status==='نیاز به بازآموزی').length,fail=latest.filter(a=>a.status==='مردود').length;const passRate=latest.length?pass/latest.length*100:0;
+function render(){const selectedBrand=$('brandFilter').value;const hasSelectedBrandData=!selectedBrand||allAttempts.some(a=>brandGroup(a.brand)===selectedBrand);$('brandEmptyState').classList.toggle('hidden',hasSelectedBrandData);const {at,latest}=getFiltered();const avg=latest.length?latest.reduce((s,a)=>s+a.score20,0)/latest.length:0;const pass=latest.filter(a=>a.status==='قبول').length,re=latest.filter(a=>a.status==='نیاز به بازآموزی').length,fail=latest.filter(a=>a.status==='مردود').length;const passRate=latest.length?pass/latest.length*100:0;
 $('kpis').innerHTML=[['افراد یکتا',latest.length,'بر اساس آخرین تلاش','#285ca5'],['نوبت‌های آزمون',at.length,'تمام تلاش‌های ثبت‌شده','#285ca5'],['نرخ قبولی نهایی',fmt(passRate)+'٪',`${pass} نفر قبول`,'#12804b'],['نیازمند پیگیری آموزشی',re+fail,`${re} نفر نیاز به بازآموزی · ${fail} نفر مردود`,'#a76008'],['میانگین نمره',fmt(avg), 'از ۲۰ · آخرین تلاش','#285ca5']].map(x=>`<div class="kpi" style="--accent:${x[3]}"><div class="label">${x[0]}</div><div class="value">${x[1]}</div><div class="sub">${x[2]}</div></div>`).join('');renderTrainingAnalytics();
 const stats=[['قبول',pass,'#12804b'],['نیاز به بازآموزی',re,'#a76008'],['مردود',fail,'#b92f54']];$('statusChart').innerHTML=stats.map(x=>`<div><div class="statushead"><span>${x[0]}</span><strong>${fmt(x[1],0)} نفر · ${fmt(latest.length?x[1]/latest.length*100:0)}٪</strong></div><div class="stack"><div class="seg" style="width:${latest.length?x[1]/latest.length*100:0}%;background:${x[2]}"></div></div></div>`).join('')||'<div class="empty">داده‌ای وجود ندارد</div>';
 let places={};latest.forEach(a=>{let k=a.place||'نامشخص';(places[k]??=[]).push(a.score20)});let pv=Object.entries(places).map(([name,vals])=>({name,avg:vals.reduce((a,b)=>a+b,0)/vals.length,n:vals.length})).sort((a,b)=>b.avg-a.avg).slice(0,9);$('placeChart').innerHTML=pv.length?pv.map(a=>`<div class="barrow"><span title="${esc(a.name)}">${esc(a.name.length>13?a.name.slice(0,12)+'…':a.name)}</span><div class="track"><div class="fill" style="width:${Math.max(0,Math.min(20,a.avg))/20*100}%;background:${a.avg>=passLine/5?'#12804b':a.avg>=retrainLine/5?'#a76008':'#b92f54'}"></div></div><strong>${fmt(a.avg)}</strong></div>`).join(''):'<div class="empty">داده‌ای وجود ندارد</div>';
@@ -371,7 +405,14 @@ function renderTrainingAnalytics(){const brand=$('brandFilter').value;const grou
 $('firstDonut').addEventListener('click',e=>{const hit=e.target.closest('[data-group]');if(!hit)return;const items=JSON.parse($('firstDonut').dataset.items||'[]');openDrilldown(hit.dataset.group,items)});
 $('retrainingDonut').addEventListener('click',e=>{const hit=e.target.closest('[data-group]');if(!hit)return;const items=JSON.parse($('retrainingDonut').dataset.items||'[]');openDrilldown(hit.dataset.group,items)});
 $('closeDrilldown').addEventListener('click',()=>{$('drilldownPanel').hidden=true});
-function refreshOptions(){setOptions('placeFilter',allAttempts.map(a=>a.place),'همه محل‌ها');setOptions('roleFilter',allAttempts.map(a=>a.role),'همه سمت‌ها')}
+function refreshBrandOptions(){
+ const el=$('brandFilter'),selected=el.value;
+ const options=[['','همه برندها'],['پنبه‌ریز','پنبه‌ریز'],['کیدفول','کیدفول'],['سایر برندها','سایر برندها']];
+ const seen=new Set();
+ el.innerHTML=options.filter(([value,label])=>{const key=value?normalizeBrand(value):'';if(seen.has(key))return false;seen.add(key);return true;}).map(([value,label])=>`<option value="${esc(value)}">${esc(label)}</option>`).join('');
+ el.value=options.some(([value])=>value===selected)?selected:'';
+}
+function refreshOptions(){refreshBrandOptions();setOptions('placeFilter',allAttempts.map(a=>a.place),'همه محل‌ها');setOptions('roleFilter',allAttempts.map(a=>a.role),'همه سمت‌ها')}
 ['brandFilter','unitFilter','placeFilter','trainingModeFilter','roleFilter','statusFilter'].forEach(id=>$(id).addEventListener('change',render));
 $('resetBtn').onclick=()=>{allAttempts=cleanData(INITIAL);try{localStorage.removeItem('panberes_dashboard_imported_data_v3')}catch(e){}$('sourceTag').textContent='داده اولیه کارنامه آزمون ۱۴۰۵';$('loadMsg').textContent='داده اولیه کارنامه آزمون ۱۴۰۵ بازیابی شد؛ داده واردشده از این مرورگر پاک شد.';refreshOptions();render()};
 $('thresholdBtn').onclick=()=>{let p=prompt('حداقل نمره قبولی از ۲۰ را وارد کنید:',String(passLine/5));if(p===null)return;let r=prompt('حداقل نمره بازآموزی از ۲۰ را وارد کنید:',String(retrainLine/5));if(r===null)return;p=Number(p);r=Number(r);if(!Number.isFinite(p)||!Number.isFinite(r)||p<0||p>20||r<0||r>=p){alert('مقادیر نامعتبرند. قبولی باید بین ۰ تا ۲۰ و بازآموزی کمتر از قبولی باشد.');return}passLine=p*5;retrainLine=r*5;allAttempts=allAttempts.map(a=>({...a,status:statusFor(a.score100)}));render()};
