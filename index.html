@@ -345,8 +345,11 @@ function brandGroup(brand){
     .replace(/[ـ\u200b-\u200f\u202a-\u202e\ufeff]/g,'')
     .replace(/[\s\u00a0\u200c\u200d\-\u2010-\u2015_]/g,'')
     .toLowerCase();
-  if (['پنبهریز','panberes','panberiz'].includes(normalized)) return 'panberes';
-  if (['کیدفول','kidful','kidfull'].includes(normalized)) return 'kidful';
+
+  // نام برند ممکن است در شیت همراه با توضیح، پسوند یا پیشوند ثبت شده باشد.
+  // بنابراین علاوه بر تطبیق کامل، وجود نام استاندارد برند در مقدار را نیز بررسی می‌کنیم.
+  if (normalized.includes('پنبهریز') || normalized.includes('panberes') || normalized.includes('panberiz')) return 'panberes';
+  if (normalized.includes('کیدفول') || normalized.includes('kidful')) return 'kidful';
   return 'other';
 }
 function getFiltered(){let b=$('brandFilter').value,u=$('unitFilter').value,p=$('placeFilter').value,m=$('trainingModeFilter').value,r=$('roleFilter').value,s=$('statusFilter').value;let at=allAttempts.filter(a=>(!b||brandGroup(a.brand)===brandGroup(b))&&(!u||((u==='سایر واحدها'?(!!a.unit&&!['فروش','مارکتینگ','برندینگ'].includes(a.unit)):a.unit===u)))&&(!p||a.place===p)&&(!m||(()=>{const mode=v=>{const z=norm(v).replace(/[يى]/g,'ی');if(['آنلاین','آن لاين','آنلاین ','online','online training','مجازی'].includes(z))return 'آنلاین';if(['حضوری','حضوري','in-person','in person','حضوری '].includes(z))return 'حضوری';return z};return mode(a.examMode)===mode(m)})())&&(!r||a.role===r));let latest=latestPeople(at).filter(a=>!s||a.status===s);return {at,latest}}
